@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.bookmysport.reviews.Models.ResponseMessage;
-
 import reactor.core.publisher.Mono;
 
 @Service
@@ -19,9 +17,6 @@ public class GetUserDetailsMW {
 
     @Autowired
     private WebClient webClient;
-
-    @Autowired
-    private ResponseMessage responseMessage;
 
     public ResponseEntity<Map<String, Object>> getUserDetails(String token, String role) {
         try {
@@ -37,15 +32,24 @@ public class GetUserDetailsMW {
                     });
 
             Map<String, Object> userDetails = userDetailsMono.block();
-            return ResponseEntity.ok().body(userDetails);
+
+            if (userDetails == null) {
+                Map<String, Object> response = new HashMap<>();
+
+                response.put("success", false);
+                response.put("message", "User doesn't exist");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+            else
+            {
+                return ResponseEntity.ok().body(userDetails);
+            }
 
         } catch (Exception e) {
             Map<String, Object> response = new HashMap<>();
 
             response.put("success", false);
             response.put("message", e.getMessage());
-
-            responseMessage.setUserDetails(response);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
