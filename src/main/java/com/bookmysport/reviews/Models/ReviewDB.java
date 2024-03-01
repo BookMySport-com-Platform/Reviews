@@ -20,7 +20,7 @@ public class ReviewDB {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID reviewId;
 
-    private UUID spId;
+    private UUID playgroundId;
 
     private String userName;
 

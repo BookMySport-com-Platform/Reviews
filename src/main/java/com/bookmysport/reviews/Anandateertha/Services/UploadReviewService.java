@@ -34,7 +34,7 @@ public class UploadReviewService {
 
                 ReviewDB reviewDB = new ReviewDB();
 
-                reviewDB.setSpId(review.getSpId());
+                reviewDB.setPlaygroundId(review.getPlaygroundId());
                 reviewDB.setUserName(userName);
                 reviewDB.setReview(review.getReview());
 
