@@ -28,4 +28,6 @@ public class ReviewDB {
 
     private String date; 
 
+    private UUID userId;
+
 }

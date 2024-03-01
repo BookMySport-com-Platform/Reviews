@@ -1,5 +1,6 @@
 package com.bookmysport.reviews.Middlewares;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +22,8 @@ public class GetUserDetailsMW {
 
     @Autowired
     private ResponseMessage responseMessage;
-    
-    public ResponseEntity<ResponseMessage> getUserDetails(String token,String role)
-    {
+
+    public ResponseEntity<Map<String, Object>> getUserDetails(String token, String role) {
         try {
             Mono<Map<String, Object>> userDetailsMono = webClient.get()
                     .uri(System.getenv("AUTH_SERVICE_URL"))
@@ -37,20 +37,16 @@ public class GetUserDetailsMW {
                     });
 
             Map<String, Object> userDetails = userDetailsMono.block();
-            if (userDetails != null) {
-                responseMessage.setSuccess(true);
-                responseMessage.setMessage(userDetails.get("userName").toString());
-                return ResponseEntity.ok().body(responseMessage);
-            } else {
-                responseMessage.setSuccess(false);
-                responseMessage.setMessage("No user exists");
-                return ResponseEntity.badRequest().body(responseMessage);
-            }
+            return ResponseEntity.ok().body(userDetails);
 
         } catch (Exception e) {
-            responseMessage.setSuccess(false);
-            responseMessage.setMessage("Internal Server Error " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseMessage);
+            Map<String, Object> response = new HashMap<>();
+
+            response.put("success", false);
+            response.put("message", e.getMessage());
+
+            responseMessage.setUserDetails(response);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-    }   
+    }
 }

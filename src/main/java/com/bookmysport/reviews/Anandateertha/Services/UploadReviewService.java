@@ -1,6 +1,8 @@
 package com.bookmysport.reviews.Anandateertha.Services;
 
 import java.time.LocalDate;
+import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,11 +28,11 @@ public class UploadReviewService {
 
     public ResponseEntity<ResponseMessage> uploadReviewService(String token, String role, ReviewDB review) {
         try {
-            ResponseMessage responseFromMW = getUserDetailsMW.getUserDetails(token, role).getBody();
+            Map<String, Object> responseFromMW = getUserDetailsMW.getUserDetails(token, role).getBody();
 
-            if (responseFromMW.getSuccess()) {
+            if (responseFromMW.size()!=0) {
 
-                String userName = getUserDetailsMW.getUserDetails(token, role).getBody().getMessage();
+                String userName = responseFromMW.get("userName").toString();
 
                 ReviewDB reviewDB = new ReviewDB();
 
@@ -40,6 +42,8 @@ public class UploadReviewService {
 
                 LocalDate date = LocalDate.now();
                 reviewDB.setDate(date.toString());
+
+                reviewDB.setUserId(UUID.fromString(responseFromMW.get("id").toString()));
 
                 reviewRepo.save(reviewDB);
 

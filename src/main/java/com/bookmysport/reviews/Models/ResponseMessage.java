@@ -1,5 +1,7 @@
 package com.bookmysport.reviews.Models;
 
+import java.util.Map;
+
 import org.springframework.stereotype.Component;
 
 import lombok.Data;
@@ -9,5 +11,5 @@ import lombok.Data;
 public class ResponseMessage {
     private Boolean success;
     private String message;
-    private String token;
+    private Map<String, Object> userDetails;
 }
