@@ -20,10 +20,10 @@ public class FetchReviews {
 
     @Autowired
     private ResponseMessage responseMessage;
-    
-    public ResponseEntity<Object> fetchReviewsService(String spId) {
+
+    public ResponseEntity<Object> fetchReviewsService(String playgroundId) {
         try {
-            List<ReviewDB> reviews = reviewRepo.findBySpId(UUID.fromString(spId));
+            List<ReviewDB> reviews = reviewRepo.findByPlaygroundId(UUID.fromString(playgroundId));
             if (!reviews.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.OK).body(reviews);
             } else {

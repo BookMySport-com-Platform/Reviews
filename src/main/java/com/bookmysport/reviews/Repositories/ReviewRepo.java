@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface ReviewRepo extends JpaRepository<ReviewDB, UUID> {
     
-    List<ReviewDB> findBySpId(UUID spId);
+    List<ReviewDB> findByPlaygroundId(UUID playgroundId);
     
 }

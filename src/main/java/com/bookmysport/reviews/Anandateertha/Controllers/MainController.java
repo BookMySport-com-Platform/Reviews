@@ -31,8 +31,8 @@ public class MainController {
     }
 
     @GetMapping("getreviews")
-    public ResponseEntity<Object> getReviews(@RequestHeader String spId) {
-        return fetchReviews.fetchReviewsService(spId);
+    public ResponseEntity<Object> getReviews(@RequestHeader String playgroundId) {
+        return fetchReviews.fetchReviewsService(playgroundId);
     }
 
 }
