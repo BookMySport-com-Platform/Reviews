@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.bookmysport.reviews.Middlewares.GetNumberOfSlotsByUser;
 import com.bookmysport.reviews.Middlewares.GetUserDetailsMW;
 import com.bookmysport.reviews.Models.ResponseMessage;
 import com.bookmysport.reviews.Models.ReviewDB;
@@ -26,30 +27,42 @@ public class UploadReviewService {
     @Autowired
     private ResponseMessage responseMessage;
 
+    @Autowired
+    private GetNumberOfSlotsByUser getNumberOfSlotsByUser;
+
     public ResponseEntity<ResponseMessage> uploadReviewService(String token, String role, ReviewDB review) {
         try {
+
             Map<String, Object> responseFromMW = getUserDetailsMW.getUserDetails(token, role).getBody();
 
-            if (responseFromMW.size()!=0) {
+            if (responseFromMW.size() != 0) {
 
-                String userName = responseFromMW.get("userName").toString();
+                int numberOfBookingsByUser = getNumberOfSlotsByUser.getNumberOfSlotsOfAnUser(token, role).getBody().getNumberOfSlots();
 
-                ReviewDB reviewDB = new ReviewDB();
+                if (numberOfBookingsByUser != 0) {
+                    String userName = responseFromMW.get("userName").toString();
 
-                reviewDB.setPlaygroundId(review.getPlaygroundId());
-                reviewDB.setUserName(userName);
-                reviewDB.setReview(review.getReview());
+                    ReviewDB reviewDB = new ReviewDB();
 
-                LocalDate date = LocalDate.now();
-                reviewDB.setDate(date.toString());
+                    reviewDB.setPlaygroundId(review.getPlaygroundId());
+                    reviewDB.setUserName(userName);
+                    reviewDB.setReview(review.getReview());
 
-                reviewDB.setUserId(UUID.fromString(responseFromMW.get("id").toString()));
+                    LocalDate date = LocalDate.now();
+                    reviewDB.setDate(date.toString());
 
-                reviewRepo.save(reviewDB);
+                    reviewDB.setUserId(UUID.fromString(responseFromMW.get("id").toString()));
 
-                responseMessage.setSuccess(true);
-                responseMessage.setMessage("Review added");
-                return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+                    reviewRepo.save(reviewDB);
+
+                    responseMessage.setSuccess(true);
+                    responseMessage.setMessage("Review added");
+                    return ResponseEntity.status(HttpStatus.OK).body(responseMessage);
+                } else {
+                    responseMessage.setSuccess(false);
+                    responseMessage.setMessage("Not elgible for posting the review");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseMessage);
+                }
 
             } else {
                 responseMessage.setSuccess(false);
